@@ -44,6 +44,17 @@ def _split_data(x_data, y_data=None, train_ratio=0, split_type='uniform'):
         y_train = y_train[indexes]
     return (x_train, y_train), (x_test, y_test)
 
+def recover_window(x_train,y_train,x_test,y_test,window_size):
+    if window_size > 0:
+        x_train, window_y_train, y_train = slice_hdfs(x_train, y_train, window_size)
+        x_test, window_y_test, y_test = slice_hdfs(x_test, y_test, window_size)
+        log = "{} {} windows ({}/{} anomaly), {}/{} normal"
+        print(log.format("Train:", x_train.shape[0], y_train.sum(), y_train.shape[0], (1 - y_train).sum(),
+                         y_train.shape[0]))
+        print(log.format("Test:", x_test.shape[0], y_test.sum(), y_test.shape[0], (1 - y_test).sum(), y_test.shape[0]))
+        return (x_train, window_y_train, y_train), (x_test, window_y_test, y_test)
+
+
 def load_HDFS(log_file, label_file=None, window='session', train_ratio=0.5, split_type='sequential', save_csv=False, window_size=0):
     """ Load HDFS structured log into train and test data
 
@@ -72,7 +83,8 @@ def load_HDFS(log_file, label_file=None, window='session', train_ratio=0.5, spli
 
     if log_file.endswith('.npz'):
         # Split training and validation set in a class-uniform way
-        data = np.load(log_file)
+
+        data = np.load(log_file,allow_pickle=True)
         x_data = data['x_data']
         y_data = data['y_data']
         (x_train, y_train), (x_test, y_test) = _split_data(x_data, y_data, train_ratio, split_type)
@@ -109,12 +121,31 @@ def load_HDFS(log_file, label_file=None, window='session', train_ratio=0.5, spli
         
         print(y_train.sum(), y_test.sum())
 
+        for i in x_train:
+            i=np.array(i)
+
+
         if save_csv:
             data_df.to_csv('data_instances.csv', index=False)
 
         if window_size > 0:
             x_train, window_y_train, y_train = slice_hdfs(x_train, y_train, window_size)
             x_test, window_y_test, y_test = slice_hdfs(x_test, y_test, window_size)
+
+####################分层分组
+            # X_event=np.copy(x_train['EventSequence'])
+            #
+            # print('player:',np.unique(window_y_train))
+            #
+            # T2=[X_event[i].append(window_y_train[i]) for i in range(0,len(X_event))]
+            # T=np.c_[np.array(list(X_event)).reshape(-1,2),window_y_train,]
+            #
+            # Uniquelist=np.unique(X_event).reshape(-1,1)
+            #
+            # new_array = [np.array(row) for row in T]
+
+###########################
+
             log = "{} {} windows ({}/{} anomaly), {}/{} normal"
             print(log.format("Train:", x_train.shape[0], y_train.sum(), y_train.shape[0], (1-y_train).sum(), y_train.shape[0]))
             print(log.format("Test:", x_test.shape[0], y_test.sum(), y_test.shape[0], (1-y_test).sum(), y_test.shape[0]))

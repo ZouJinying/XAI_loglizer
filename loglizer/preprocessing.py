@@ -112,7 +112,7 @@ class FeatureExtractor(object):
         print('Train data shape: {}-by-{}\n'.format(X_new.shape[0], X_new.shape[1])) 
         return X_new
 
-    def transform(self, X_seq,flag):
+    def transform(self, X_seq,noise_flag):
         """ Transform the data matrix with trained parameters
 
         Arguments
@@ -136,7 +136,7 @@ class FeatureExtractor(object):
             X_df[event] = [0] * len(X_df)
         X = X_df[self.events].values
 
-        if flag==1:
+        if noise_flag==1:
             for i in range(0,X.shape[0]):
                 for j in range(0,X.shape[1]):
                     X[i][j]+=(random.randint(0,3))

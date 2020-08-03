@@ -93,5 +93,5 @@ class DeepLog(nn.Module):
             "f1" : f1_score(y_true, y_pred),
             "recall" : recall_score(y_true, y_pred),
             "precision" : precision_score(y_true, y_pred)}
-            print([(k, round(v, 5))for k,v in metrics.items()])
+            #print([(k, round(v, 5))for k,v in metrics.items()])
             return metrics
