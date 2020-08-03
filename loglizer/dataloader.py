@@ -119,7 +119,7 @@ def load_HDFS(log_file, label_file=None, window='session', train_ratio=0.5, spli
                 data_df['Label'].values, train_ratio, split_type)
             print("哈哈哈 我被调用了")
         
-            print(y_train.sum(), y_test.sum())
+        print(y_train.sum(), y_test.sum())
 
         for i in x_train:
             i=np.array(i)
