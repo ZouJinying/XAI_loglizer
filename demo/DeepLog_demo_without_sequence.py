@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import matplotlib.pyplot as plt
+import matplotlib as plt
 import numpy as np
 sys.path.append('../')
 from loglizer import dataloader
@@ -49,11 +49,13 @@ if __name__ == '__main__':
     model = DeepLog(num_labels=feature_extractor.num_labels, hidden_size=hidden_size, num_directions=num_directions, topk=topk, device=device)
     model.fit(train_loader, epoches)
 
-   # print('Train validation:')
-   # metrics = model.evaluate(train_loader)
+    print('Train validation:')
+    metrics = model.evaluate(train_loader)
+    print(metrics)
 
-   # print('Test validation:')
-   # metrics = model.evaluate(test_loader)
+    print('Test validation:')
+    metrics = model.evaluate(test_loader)
+    print(metrics)
 
 
     print('calculate characteristic function for coalition')
@@ -66,7 +68,6 @@ if __name__ == '__main__':
     shapleys = x_ai.calculatShapley(cvalue, coalition, playerlist)
     print(shapleys)
 
-
     plt.bar(range(14), shapleys, color='lightsteelblue')
     plt.plot(range(14), shapleys, marker='o', color='coral')  # coral
     plt.xticks(range(14), Eventname)
@@ -74,4 +75,3 @@ if __name__ == '__main__':
     plt.ylabel("Shapley addictive index")
     plt.legend()
     plt.show()
-
